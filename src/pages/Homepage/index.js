@@ -1,19 +1,48 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Input, Segment, Header, TextArea,
+import { Menu, Segment, Header, TextArea,
     Button, Modal, Icon,
-    Label, Image,
+    Label, Image, Sidebar,
 } from 'semantic-ui-react';
 
 class Homepage extends Component {
     render() {
         return (
             <div>
-                <Segment raised>
-                    <Label as='a' color='red' ribbon>Overview</Label>
-                    <span>Account Details</span>
+                <Menu
+                    style={{
+                        marginTop: 0,
+                        borderRadius: '0'
+                    }}
+                    inverted
+                    pointing
+                    secondary
+                >
+                    <Menu.Item
+                        name='editorials'
+                    >
+                        首页
+                    </Menu.Item>
 
-                    <Image src='/assets/images/wireframe/paragraph.png' />
+                    <Menu.Item
+                        name='reviews'
+                    >
+                        上传简历
+                    </Menu.Item>
+
+                    <Menu.Item
+                        name='upcomingEvents'
+                    >
+                        关于我们
+                    </Menu.Item>
+                </Menu>
+                <Segment
+                    style={{
+                        maxWidth: '1200px',
+                        margin: '0 auto'
+                    }}
+                >
+
                 </Segment>
             </div>
         );

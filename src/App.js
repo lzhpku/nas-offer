@@ -4,6 +4,9 @@ import { HashRouter } from 'react-router-dom';
 
 import PostResume from "./pages/PostResume";
 import Homepage from "./pages/Homepage";
+import PersonResume from "./pages/PersonResume";
+
+import './app.css';
 
 
 class App extends Component {
@@ -19,12 +22,16 @@ class App extends Component {
     }
     render() {
         return (
-            <HashRouter onUpdate={(e) => {console.log(e)}}>
-                <Switch>
-                    <Route exact path={['/', '/homepage']} component={Homepage} />
-                    <Route exact path="/post" component={PostResume} />
-                </Switch>
-            </HashRouter >
+            <div>
+                <div className="background" />
+                <HashRouter onUpdate={(e) => {console.log(e)}}>
+                    <Switch>
+                        <Route exact path={['/', '/homepage']} component={Homepage} />
+                        <Route exact path="/post" component={PostResume} />
+                        <Route exact path="/resume" component={PersonResume} />
+                    </Switch>
+                </HashRouter >
+            </div>
         )
     }
 }
