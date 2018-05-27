@@ -1,13 +1,12 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { Input, Segment, Header, TextArea,
-    Button, Modal, Icon,
 } from 'semantic-ui-react';
 import './style.css';
 
 class Resume extends Component {
     handleChange = (type) => (e) => {
-        const { name, tel, email, profile, experience, skills } = this.props;
+        const { name, tel, email, profile, experience, skills, target, } = this.props;
         this.props.onChange({
             name,
             tel,
@@ -15,6 +14,7 @@ class Resume extends Component {
             profile,
             experience,
             skills,
+            target,
             [type]: e.target.value,
         });
     }
@@ -26,6 +26,8 @@ class Resume extends Component {
             profile,
             experience,
             skills,
+            education,
+            target,
         } = this.props;
         return (
             <div
@@ -106,19 +108,37 @@ class Resume extends Component {
                                     ...(!this.props.ifPaid && this.props.type === 'read'
                                         ? { height: '100%', width: '100%', top: '0', left: '0',
                                                 background: '#fff' }
-                                        : {}
+                                        : { display: 'none'}
                                     ),
                                 }}
                             >
                                 {this.props.children}
                             </div>
                         </div>
+                        <Input
+                            placeholder="职位"
+                            transparent
+                            size="large"
+                            style={{
+                                display: 'block',
+                                marginTop: '16px'
+                            }}
+                            disabled={this.props.type === 'read'}
+                            value={target}
+                            input={<input style={{ textAlign: 'right' }} />}
+                            actionPosition="left"
+                            onChange={this.handleChange('target')}
+                        />
 
                     </Segment>
                 </Segment>
 
                 <Segment>
-                    <Header as='h2' icon='plug' content="PROFILE" />
+                    <Header
+                        style={{
+                            color: '#333'
+                        }}
+                        as='h2' icon='user' content="PROFILE" />
                     <TextArea
                         autoHeight
                         value={profile}
@@ -129,7 +149,7 @@ class Resume extends Component {
                     />
                 </Segment>
                 <Segment>
-                    <Header as='h2' icon='plug' content="EXPERIENCE" />
+                    <Header as='h2' icon='sitemap' content="EXPERIENCE" />
                     <TextArea
                         autoHeight
                         value={experience}
@@ -140,7 +160,7 @@ class Resume extends Component {
                     />
                 </Segment>
                 <Segment>
-                    <Header as='h2' icon='plug' content="SKILLS" />
+                    <Header as='h2' icon='trophy' content="SKILLS" />
                     <TextArea
                         autoHeight
                         style={{ minHeight: 100, width: '100%' }}
@@ -148,6 +168,17 @@ class Resume extends Component {
                         value={skills}
                         disabled={this.props.type === 'read'}
                         onChange={this.handleChange('skills')}
+                    />
+                </Segment>
+                <Segment>
+                    <Header as='h2' icon='student' content="EDUCATION" />
+                    <TextArea
+                        autoHeight
+                        style={{ minHeight: 100, width: '100%' }}
+                        placeholder="请介绍您的教育背景"
+                        value={education}
+                        disabled={this.props.type === 'read'}
+                        onChange={this.handleChange('education')}
                     />
                 </Segment>
             </div>
@@ -164,7 +195,9 @@ Resume.defaultProps = {
     profile: '',
     experience: '',
     skills: '',
-    ifPaid: false,
+    education: '',
+    ifPaid: true,
+    target: '',
     onChange: () => {},
 };
 

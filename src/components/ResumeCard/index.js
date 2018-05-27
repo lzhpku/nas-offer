@@ -1,30 +1,52 @@
 import React, { Component } from 'react';
 import { Card, Label, Image, Icon } from 'semantic-ui-react';
 
+import { withRouter } from 'react-router';
+
+import danielImgUrl from './images/daniel.jpg';
+import elliotImgUrl from './images/elliot.jpg';
+import matthewImgUrl from './images/matthew.png';
+import jennyImgUrl from './images/jenny.jpg';
+import steveImgUrl from './images/steve.jpg';
+import mollyImgUrl from './images/molly.png';
+
+
+
+function randomRangeOf(num) {
+    return Math.floor(Math.random()*num);
+}
+const imgUrls = [danielImgUrl, elliotImgUrl, matthewImgUrl, jennyImgUrl, steveImgUrl, mollyImgUrl]
+const colors = ['teal', 'orange', 'blue', 'red', 'violet', 'purple']
+
 class ResumeCard extends Component {
+    randomImageUrl = imgUrls[randomRangeOf(imgUrls.length)]
+    randomColor = colors[randomRangeOf(colors.length)]
+
+    handleClick = () => {
+        this.props.history.push(`/resume/${this.props.resumeId}`);
+    }
     render() {
         const { name, target, profile, price, paidCount, resumeId } = this.props;
         return (
-            <Card>
+            <Card
+                onClick={this.handleClick}
+            >
+                <Image
+                    label={{ color: this.randomColor, content: target, icon: 'hotel', ribbon: true }}
+                    src={this.randomImageUrl} />
                 <Card.Content>
-                    <Image src='./assets/images/elliot.jpg' />
                     <Card.Header>
-                        <Label as='a' color='red' ribbon> { target } </Label>
                         { name }
                     </Card.Header>
                     <Card.Description>
                         { profile }
                     </Card.Description>
                 </Card.Content>
-                <Card.Content>
-                    <a>
-                        <Icon name='paidCount' />
-                        { paidCount } 人已查看
-                    </a>
-                    <a>
-                        <Icon name='price' />
-                        获取联系方式仅需 { price } NAS
-                    </a>
+                <Card.Content extra>
+                    <div>
+                        <Icon name='bitcoin' />
+                        已有{ paidCount } 人付费查看
+                    </div>
                 </Card.Content>
             </Card>
         )
@@ -32,12 +54,12 @@ class ResumeCard extends Component {
 }
 
 ResumeCard.defaultProps = {
-    name: '柯诗栋',
-    target: '前端工程师',
-    profile: '搜狐资深前端技术总监，1年前端工作经验',
+    name: '',
+    target: '',
+    profile: '',
     price: 0,
     paidCount: 0,
-    resumeId: 'dskdhsakjdhk'
+    resumeId: ''
 };
 
-export default ResumeCard;
+export default withRouter(ResumeCard);

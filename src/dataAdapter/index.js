@@ -1,140 +1,51 @@
 import NebPay from '../utils/nebpay';
 import config from '../config';
+import { Neb, HttpRequest } from 'nebulas';
 
 const nebPay = new NebPay();
 const env = process.env.env;
 
-console.log(config[env]['contract_address']);
+const neb = new Neb();
+neb.setRequest(new HttpRequest(config[env]['contact_host']))
 
-const cvtQuiz = (BEQuiz) => {
-    const { id, question: title, answer: content, date,
-        nick,
-        status,
-        checkCount,
+const cvtResume = (resume) => {
+    const {
+        createTime,
+        name,
+        paidCount,
         price,
-    } = BEQuiz;
+        phone,
+        profile,
+        email,
+        project,
+        skill,
+        education,
+        status,
+        target,
+        resumeId,
+    } = resume;
     return {
-        id,
-        title,
-        content,
-        date: Number(date),
-        nick,
-        author: id.split('$$$')[0],
-        status: Number(status),
-        price: Number(price),
-        checkCount: Number(checkCount),
+        name,
+        tel: phone,
+        email: email,
+        profile: profile,
+        experience: project,
+        skills: skill,
+        education: education,
+        price,
+        target,
+        paidCount,
+        createTime,
+        resumeId,
+        ifPaid: status === 0 || status === 1,
     };
 }
 
 
-export const releaseQuiz = (question, answer, date, nick, price) => {
+export const postResume = (name, target, tel, email, profile, education, experience, skills, price) => {
     return new Promise((resolve) => {
-        nebPay.call(config[env]['contract_address'], 0, 'saveQuestion',
-            JSON.stringify([question, answer, String(date), nick, price]), {
-            qrcode: {
-                showQRCode: false
-            },
-            // goods: {
-            //     name: "test",
-            //     desc: "test goods"
-            // },
-            //set listener for extension transaction result
-            listener: (res) => {
-                resolve(res);
-            }
-        });
-    });
-}
-
-export const getQuizList = () => {
-    return new Promise((resolve) => {
-        nebPay.simulateCall(config[env]['contract_address'], 0, 'getQuestionList', JSON.stringify([20, 0]), {
-            qrcode: {
-                showQRCode: false
-            },
-            // goods: {
-            //     name: "test",
-            //     desc: "test goods"
-            // },
-            //set listener for extension transaction result
-            listener: (res) => {
-                console.log('列表', res);
-                resolve({
-                    list: JSON.parse(res.result).map(item => (
-                        cvtQuiz(item)
-                    )).reverse(),
-                });
-            }
-        });
-    });
-};
-
-export const getMyQuiz = () => {
-    return new Promise((resolve) => {
-        nebPay.simulateCall(config[env]['contract_address'], 0, 'getAuthorQuestionList', JSON.stringify([]), {
-            qrcode: {
-                showQRCode: false
-            },
-            // goods: {
-            //     name: "test",
-            //     desc: "test goods"
-            // },
-            //set listener for extension transaction result
-            listener: (res) => {
-                resolve({
-                    list: JSON.parse(res.result).map(item => (
-                        cvtQuiz(item)
-                    )).reverse(),
-                });
-            }
-        });
-    });
-};
-
-export const getQuiz = (id) => {
-    return new Promise(resolve => {
-        nebPay.simulateCall(config[env]['contract_address'], 0, 'getQuestionItem', JSON.stringify([ id ]), {
-            qrcode: {
-                showQRCode: false
-            },
-            // goods: {
-            //     name: "test",
-            //     desc: "test goods"
-            // },
-            //set listener for extension transaction result
-            listener: (res) => {
-                resolve(cvtQuiz(JSON.parse(res.result)));
-            }
-        });
-    })
-}
-
-export const purchasedQuiz = () => {
-    return new Promise(resolve => {
-        nebPay.simulateCall(config[env]['contract_address'], 0, 'getUserCheckList', JSON.stringify([]), {
-            qrcode: {
-                showQRCode: false
-            },
-            // goods: {
-            //     name: "test",
-            //     desc: "test goods"
-            // },
-            //set listener for extension transaction result
-            listener: (res) => {
-                resolve({
-                    list: JSON.parse(res.result).map(item => (
-                        cvtQuiz(item)
-                    )).reverse(),
-                });
-            }
-        });
-    })
-}
-
-export const buyQuiz = (id, price, date = '') => {
-    return new Promise((resolve) => {
-        nebPay.call(config[env]['contract_address'], Number(price), 'checkQuestion',
-            JSON.stringify([id, date]), {
+        nebPay.call(config[env]['contract_address'], 0, 'saveResume',
+            JSON.stringify([name, target, tel, email, profile, education, experience, skills, price, null]), {
                 qrcode: {
                     showQRCode: false
                 },
@@ -144,9 +55,73 @@ export const buyQuiz = (id, price, date = '') => {
                 // },
                 //set listener for extension transaction result
                 listener: (res) => {
-                    console.log('buy quiz', res);
                     resolve(res);
                 }
             });
     });
 }
+
+export const checkResume = (resumeId, price) => {
+    return new Promise((resolve) => {
+        nebPay.call(config[env]['contract_address'], price, 'checkResume',
+            JSON.stringify([resumeId]), {
+                qrcode: {
+                    showQRCode: false
+                },
+                // goods: {
+                //     name: "test",
+                //     desc: "test goods"
+                // },
+                //set listener for extension transaction result
+                listener: (res) => {
+                    resolve(res);
+                }
+            });
+    });
+}
+
+export const getResume = (resumeId) => {
+    return new Promise((resolve) => {
+        nebPay.simulateCall(config[env]['contract_address'], 0, 'getResume', JSON.stringify([resumeId]), {
+            qrcode: {
+                showQRCode: false
+            },
+            // goods: {
+            //     name: "test",
+            //     desc: "test goods"
+            // },
+            //set listener for extension transaction result
+            listener: (res) => {
+                resolve({
+                    resume: cvtResume(JSON.parse(res.result)),
+                });
+            }
+        });
+    });
+}
+
+export const getResumeList = (curPage = 1) => {
+    const perPage = 20;
+
+    return new Promise((resolve) => {
+        neb.api.call({
+            from: config[env]['contract_address'],
+            to: config[env]['contract_address'],
+            value: 0,
+            contract: {
+                function: 'getResumeList',
+                args: JSON.stringify([perPage, (curPage -1) * perPage]),
+            },
+            gasPrice: 1000000,
+            gasLimit: 2000000,
+        })
+            .then(res => {
+                return resolve({
+                    list: JSON.parse(res.result).map(item => (
+                        cvtResume(item)
+                    )),
+                });
+            })
+    });
+}
+

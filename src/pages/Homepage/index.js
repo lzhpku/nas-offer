@@ -3,47 +3,65 @@ import PropTypes from 'prop-types';
 import { Menu, Segment, Header, TextArea,
     Button, Modal, Icon,
     Label, Image, Sidebar,
+    Grid, Card, Responsive,
 } from 'semantic-ui-react';
+import { withRouter } from 'react-router';
+import ResumeCard from '../../components/ResumeCard';
+import PageHeader from '../../components/Header';
+import { detectScreenType } from '../../utils';
+
+import { getResumeList } from '../../dataAdapter';
 
 class Homepage extends Component {
+    perRowMap = {
+        mobile: 1,
+        pad: 2,
+        pc: 4,
+    }
+    state = {
+        curPage: 1,
+        perRow: 4,
+        list: [],
+    }
+    componentDidMount() {
+        getResumeList(this.state.curPage)
+            .then(res => {
+                this.setState({
+                    list: res.list,
+                })
+            })
+
+        this.setState({
+            perRow: this.perRowMap[detectScreenType(window.innerWidth)]
+        })
+
+        window.onresize = () => {
+            this.setState({
+                perRow: this.perRowMap[detectScreenType(window.innerWidth)]
+            })
+        }
+    }
     render() {
         return (
             <div>
-                <Menu
+                <PageHeader />
+                <Card.Group
+                    itemsPerRow={this.state.perRow}
                     style={{
-                        marginTop: 0,
-                        borderRadius: '0'
-                    }}
-                    inverted
-                    pointing
-                    secondary
-                >
-                    <Menu.Item
-                        name='editorials'
-                    >
-                        首页
-                    </Menu.Item>
-
-                    <Menu.Item
-                        name='reviews'
-                    >
-                        上传简历
-                    </Menu.Item>
-
-                    <Menu.Item
-                        name='upcomingEvents'
-                    >
-                        关于我们
-                    </Menu.Item>
-                </Menu>
-                <Segment
-                    style={{
-                        maxWidth: '1200px',
-                        margin: '0 auto'
+                        padding: '40px',
                     }}
                 >
+                    {
+                        this.state.list.map(item => (
+                            <ResumeCard
+                                key={item.resumeId}
+                                {...item}
+                            />
+                        ))
+                    }
 
-                </Segment>
+
+                </Card.Group>
             </div>
         );
     }
@@ -52,4 +70,4 @@ class Homepage extends Component {
 Homepage.propTypes = {};
 Homepage.defaultProps = {};
 
-export default Homepage;
+export default withRouter(Homepage);

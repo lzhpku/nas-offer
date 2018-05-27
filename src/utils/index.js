@@ -7,3 +7,15 @@ export function getParameterByName(name, url) {
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
+
+export function detectScreenType(width) {
+    if (width <= 414) {
+        return 'mobile';
+    }
+    if (width > 414 && width <= 768) {
+        return 'pad';
+    }
+    if (width > 768) {
+        return 'pc';
+    }
+}

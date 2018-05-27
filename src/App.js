@@ -5,6 +5,7 @@ import { HashRouter } from 'react-router-dom';
 import PostResume from "./pages/PostResume";
 import Homepage from "./pages/Homepage";
 import PersonResume from "./pages/PersonResume";
+import About from './pages/About';
 
 import './app.css';
 
@@ -28,7 +29,8 @@ class App extends Component {
                     <Switch>
                         <Route exact path={['/', '/homepage']} component={Homepage} />
                         <Route exact path="/post" component={PostResume} />
-                        <Route exact path="/resume" component={PersonResume} />
+                        <Route exact path="/resume/:resumeId" component={PersonResume} />
+                        <Route exact path="/about" component={About} />
                     </Switch>
                 </HashRouter >
             </div>
